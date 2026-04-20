@@ -13,17 +13,11 @@ uniform_cost = 1
 
 def calculate_manhatten(current_matrix, end_matrix):
     total_distance = 0
-    print(end_matrix[1][7])
     for row in range(2):
         for column in range(10):
-            if current_matrix[row][column] != end_matrix[row][column]:
-                print(row,column)
-                print("Hello")
-                print(current_matrix[row][column])
-                if current_matrix[row][column] != 0:
-                    print("hello")
-                    if current_matrix[row][column] != -1:
-                        print("hello")
+            if current_matrix[row][column] != 0:
+                if current_matrix[row][column] != -1:
+                    if current_matrix[row][column] != end_matrix[row][column]:
                         #lets put a check
                         check=False
                         #get the row position of that misplaced tile
@@ -50,11 +44,8 @@ def calculate_manhatten(current_matrix, end_matrix):
                                 if check:
                                     break
                             #Now simple we take the difference of the locations in the intial matrix and the goal matrix
-                        print(row_pos, column_pos)
-                        print(row_pos_goal, column_pos_goal)
                         total_distance+=abs(row_pos-row_pos_goal) + abs(column_pos-column_pos_goal)
-        
-        return total_distance
+    return total_distance
 
 def main():
     print(calculate_manhatten(start_matrix, end_matrix))
