@@ -1,4 +1,3 @@
-
 import copy
 import heapq
 end_matrix = [[ 1,2,3,4,5,6,7,8,9,0],
@@ -17,15 +16,9 @@ class Node:
         #This is the herusitc cost for misplaced or manhatten
         self.heristic = 0
     
-    def __str__(self):
-        #This is representing the matrix of the object, it converts it to a string
-        return str(self.current_matrix)
-
-    
     def __repr__(self):
         # This method was used for debugging to see the herusitic value
         return str(self.heristic) +":" + str(self.current_matrix)
-
     
     def __lt__(self, other):
         # This method compares the herustic values of 2 objects
@@ -73,29 +66,48 @@ class Node:
     def children(self):
         #We want to get the possible moves, #We have to account the uniform plus the heruistic and then go take that path to goal state,
         #make a copy of the matrix
+        #print("Current. ", self.current_matrix)
         children = []
         for row in range(2):
             for column in range(10):
-                temp_matrix = copy.deepcopy(self.current_matrix)
                 #print(temp_matrix)
-                if self.current_matrix[row][column] == 0:
-                    if column>0 and self.current_matrix[row][column-1] != -1:
-                        #reffered to from my previous 8 puzzle code
-                        temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
-                        children.append(temp_matrix)
-                    if column<10 and self.current_matrix[row][column+1] != -1:
-                        temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
-                        children.append(temp_matrix)
-                    if row>0 and self.current_matrix[row-1][column] != -1 :
-                        temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
-                        children.append(temp_matrix)
-        #Now we want to convert all the matrixes to node because we want to store the nodes
+                if self.current_matrix[row][column] != 0 or self.current_matrix[row][column]!=-1:
+                    while column > 0 :
+                        if self.current_matrix[row][column-1] == 0:
+                            #reffered to from my previous 8 puzzle code
+                            temp_matrix = copy.deepcopy(self.current_matrix)
+                            temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
+                            children.append(temp_matrix)
+                        column = column - 1
+                    while column < 9:
+                        if column<9 and self.current_matrix[row][column+1] > 0:
+                            temp_matrix = copy.deepcopy(self.current_matrix)
+                            temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
+                            children.append(temp_matrix)
+                        column = column + 1
+                    while row > 0:
+                        if row>0 and self.current_matrix[row-1][column] > 0 :
+                            temp_matrix = copy.deepcopy(self.current_matrix)
+                            temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
+                            children.append(temp_matrix)
+                        row = row -1
+                    while row < 1:
+                        if row<1 and self.current_matrix[row+1][column] > 0 :
+                            temp_matrix = copy.deepcopy(self.current_matrix)
+                            temp_matrix[row][column], temp_matrix[row+1][column] = self.current_matrix[row+1][column], self.current_matrix[row][column]
+                            children.append(temp_matrix)
+                        row = row +1
+        #Now we want to convert all the matrixes to node because we want to store the nodes, copied from 8 puzzle
         for row in range(len(children)): # now we want to traverse through all the children we appended
             create_node = Node(children[row]) # we want to convert it to a Node becasue we are creating these matrix as a node
             create_node.cost = self.cost + 1  # we add the cost, or depth to these children
             create_node.parent = self #we assign the intial node as the parent to these children
             children[row] = create_node #putting it back into return_children array as nodes
+        for child in children:
+            print("Children. ", child)
+
         return children
+
 #copied from 8-puzzle
 def queue_make_node(initial_state):
     #create a new quene and node
@@ -107,7 +119,7 @@ def queue_make_node(initial_state):
     #queue.append(new_node)
     return queue
 
-def general_search(problem, target ):
+def general_search(problem, target):
     # lets make a dictionary to keep track of the repeating states
     repeat = dict()
     # we are making the quene and adding the intial matrix to the quene
@@ -118,7 +130,7 @@ def general_search(problem, target ):
     #this count is so I dont print the first intial matrix that the user enters
     count =0
     #check if the whole quene is empty, if its not empty than only going through the while loop
-    while (len(nodes)!=0):
+    while (len(nodes)!=0 and count < 3):
         #lets add the total_nodes that we are expanding and lets get the max size of the quene
         total_nodes=total_nodes+1
         max_size= max(len(nodes),max_size)
@@ -130,7 +142,6 @@ def general_search(problem, target ):
         if(count>1):     
             print(curNode)
 
-        
         if(curNode.current_matrix == target): #this is how we are checking if its a goal state
             #Lets print out all the of the following when we find the goal state
             print("Solution Depth",curNode.cost) 
