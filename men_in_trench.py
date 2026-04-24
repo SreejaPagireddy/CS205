@@ -1,9 +1,9 @@
 import copy
 import heapq
-end_matrix = [[ 1,2,3,4,5,6,7,8,9,0],
-               [-1,-1,-1,0,-1,0,-1,0,-1,-1]]
-start_matrix = [[0,2,3,4,5,6,7,8,9,1],
-                [-1,-1,-1,0,-1,0,-1,0,-1,-1]]
+end_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
+             [ 1,2,3,4,5,6,7,8,9,0]]
+start_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
+                [0,2,3,4,5,6,7,8,9,1]]
 uniform_cost = 1
 class Node:    
     def __init__(self,state):
@@ -65,28 +65,45 @@ class Node:
     
     def children_helper(self, current_matrix, duplicates, row, column, children):
         #recursively
-        if row<1 and self.current_matrix[row+1][column] == 0:
+        move_found = False
+        if row<1 and current_matrix[row+1][column] == 0:
             #down
             temp_matrix = copy.deepcopy(current_matrix)
-            temp_matrix[row][column], temp_matrix[row+1][column] = self.current_matrix[row+1][column], self.current_matrix[row][column]
-            children.append(temp_matrix)
-        if row>0 and self.current_matrix[row-1][column] == 0:
+            temp_matrix[row][column], temp_matrix[row+1][column] = current_matrix[row+1][column], current_matrix[row][column]
+            if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                children.append(temp_matrix)
+                duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                self.children_helper(temp_matrix, duplicates, row+1, column, children)
+                move_found = True
+        if row>0 and current_matrix[row-1][column] == 0:
             #up
             temp_matrix = copy.deepcopy(current_matrix)
-            temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
-            children.append(temp_matrix)
-        if column>0 and self.current_matrix[row][column-1] == 0:
+            temp_matrix[row][column], temp_matrix[row-1][column] = current_matrix[row-1][column], current_matrix[row][column]
+            if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                children.append(temp_matrix)
+                duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                self.children_helper(temp_matrix, duplicates, row-1, column, children)
+                move_found = True
+        if column>0 and current_matrix[row][column-1] == 0:
             #left
             temp_matrix = copy.deepcopy(current_matrix)
-            temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
-            children.append(temp_matrix)
-        if column<9 and self.current_matrix[row][column+1] == 0:
+            temp_matrix[row][column], temp_matrix[row][column -1] = current_matrix[row][column-1], current_matrix[row][column]
+            if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                children.append(temp_matrix)
+                duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                self.children_helper(temp_matrix, duplicates, row, column-1, children)
+                move_found = True
+        if column<9 and current_matrix[row][column+1] == 0:
             #right
             temp_matrix = copy.deepcopy(current_matrix)
-            temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
-            children.append(temp_matrix)
-
-
+            temp_matrix[row][column], temp_matrix[row][column +1] = current_matrix[row][column+1], current_matrix[row][column]
+            if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                children.append(temp_matrix)
+                duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                self.children_helper(temp_matrix, duplicates, row, column+1, children)
+                move_found = True
+        if not move_found:
+            return
 
     def children(self):
         #We want to get the possible moves, #We have to account the uniform plus the heruistic and then go take that path to goal state,
@@ -99,6 +116,7 @@ class Node:
                 #print(temp_matrix)
                 if self.current_matrix[row][column] != 0 and self.current_matrix[row][column]!=-1:
                     duplicates = {}
+                    duplicates[hash(tuple(map(tuple, self.current_matrix)))] = 1
                     self.children_helper(self.current_matrix, duplicates, row, column, children)
                         #check = True
                         # if row<1 and self.current_matrix[row+1][column] == 0:
@@ -131,8 +149,8 @@ class Node:
             create_node.cost = self.cost + 1  # we add the cost, or depth to these children
             create_node.parent = self #we assign the intial node as the parent to these children
             children[row] = create_node #putting it back into return_children array as nodes
-        for child in children:
-            print("Children. ", child)
+        # for child in children:
+        #     print("Children. ", child)
 
         return children
 
