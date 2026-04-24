@@ -62,41 +62,69 @@ class Node:
                                 #Now simple we take the difference of the locations in the intial matrix and the goal matrix
                             total_distance+=abs(row_pos-row_pos_goal) + abs(column_pos-column_pos_goal)
         return total_distance
+    
+    def children_helper(self, current_matrix, duplicates, row, column, children):
+        #recursively
+        if row<1 and self.current_matrix[row+1][column] == 0:
+            #down
+            temp_matrix = copy.deepcopy(current_matrix)
+            temp_matrix[row][column], temp_matrix[row+1][column] = self.current_matrix[row+1][column], self.current_matrix[row][column]
+            children.append(temp_matrix)
+        if row>0 and self.current_matrix[row-1][column] == 0:
+            #up
+            temp_matrix = copy.deepcopy(current_matrix)
+            temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
+            children.append(temp_matrix)
+        if column>0 and self.current_matrix[row][column-1] == 0:
+            #left
+            temp_matrix = copy.deepcopy(current_matrix)
+            temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
+            children.append(temp_matrix)
+        if column<9 and self.current_matrix[row][column+1] == 0:
+            #right
+            temp_matrix = copy.deepcopy(current_matrix)
+            temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
+            children.append(temp_matrix)
+
+
 
     def children(self):
         #We want to get the possible moves, #We have to account the uniform plus the heruistic and then go take that path to goal state,
         #make a copy of the matrix
         #print("Current. ", self.current_matrix)
         children = []
+        #check = False
         for row in range(2):
             for column in range(10):
                 #print(temp_matrix)
-                if self.current_matrix[row][column] != 0 or self.current_matrix[row][column]!=-1:
-                    while column > 0 :
-                        if self.current_matrix[row][column-1] == 0:
-                            #reffered to from my previous 8 puzzle code
-                            temp_matrix = copy.deepcopy(self.current_matrix)
-                            temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
-                            children.append(temp_matrix)
-                        column = column - 1
-                    while column < 9:
-                        if column<9 and self.current_matrix[row][column+1] > 0:
-                            temp_matrix = copy.deepcopy(self.current_matrix)
-                            temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
-                            children.append(temp_matrix)
-                        column = column + 1
-                    while row > 0:
-                        if row>0 and self.current_matrix[row-1][column] > 0 :
-                            temp_matrix = copy.deepcopy(self.current_matrix)
-                            temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
-                            children.append(temp_matrix)
-                        row = row -1
-                    while row < 1:
-                        if row<1 and self.current_matrix[row+1][column] > 0 :
-                            temp_matrix = copy.deepcopy(self.current_matrix)
-                            temp_matrix[row][column], temp_matrix[row+1][column] = self.current_matrix[row+1][column], self.current_matrix[row][column]
-                            children.append(temp_matrix)
-                        row = row +1
+                if self.current_matrix[row][column] != 0 and self.current_matrix[row][column]!=-1:
+                    duplicates = {}
+                    self.children_helper(self.current_matrix, duplicates, row, column, children)
+                        #check = True
+                        # if row<1 and self.current_matrix[row+1][column] == 0:
+                        #     #down
+                        #     temp_matrix = copy.deepcopy(self.current_matrix)
+                        #     temp_matrix[row][column], temp_matrix[row+1][column] = self.current_matrix[row+1][column], self.current_matrix[row][column]
+                        #     children.append(temp_matrix)
+                        # if row>0 and self.current_matrix[row-1][column] == 0:
+                        #     #up
+                        #     temp_matrix = copy.deepcopy(self.current_matrix)
+                        #     temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
+                        #     children.append(temp_matrix)
+                        # if column>0 and self.current_matrix[row][column-1] == 0:
+                        #     #left
+                        #     temp_matrix = copy.deepcopy(self.current_matrix)
+                        #     temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
+                        #     children.append(temp_matrix)
+                        # if column<9 and self.current_matrix[row][column+1] == 0:
+                        #     #right
+                        #     temp_matrix = copy.deepcopy(self.current_matrix)
+                        #     temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
+                        #     children.append(temp_matrix)
+                #     if check:
+                #         break
+                # if check:
+                #     break
         #Now we want to convert all the matrixes to node because we want to store the nodes, copied from 8 puzzle
         for row in range(len(children)): # now we want to traverse through all the children we appended
             create_node = Node(children[row]) # we want to convert it to a Node becasue we are creating these matrix as a node
@@ -130,7 +158,7 @@ def general_search(problem, target):
     #this count is so I dont print the first intial matrix that the user enters
     count =0
     #check if the whole quene is empty, if its not empty than only going through the while loop
-    while (len(nodes)!=0 and count < 3):
+    while (len(nodes)!=0):
         #lets add the total_nodes that we are expanding and lets get the max size of the quene
         total_nodes=total_nodes+1
         max_size= max(len(nodes),max_size)
@@ -151,7 +179,6 @@ def general_search(problem, target):
         #now we want to go through the children
         for child in curNode.children(): #simmilar to expanding
             #lets set that inital matrix we expanding to the parent
-            child.parent = curNode
             #make sure that the children are not a repeat, we dont wanna push repeates
             if(not (hash(tuple(map(tuple, child.current_matrix))) in repeat)):
                 #if its uniform cost
@@ -159,6 +186,7 @@ def general_search(problem, target):
                 heapq.heappush(nodes, child) #appending children based on the herusitc values, priority quene
                 #adding these to repeate so we dont repeate in any of the children
                 repeat[hash(tuple(map(tuple, child.current_matrix)))] = 1
+
     #we are going to return failure if the quene was empty
     return "Failure"  
 def main():
