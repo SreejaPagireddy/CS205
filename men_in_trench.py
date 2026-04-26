@@ -34,33 +34,38 @@ class Node:
                 if self.current_matrix[row][column] != 0:
                     if self.current_matrix[row][column] != -1:
                         if self.current_matrix[row][column] != end_matrix[row][column]:
-                            #lets put a check
-                            check=False
-                            #get the row position of that misplaced tile
-                            row_pos= row
-                            #get the column position of that misplaced tile
-                            column_pos = column
-                            #we want to store that value of where it currently is in our matrix
-                            num = self.current_matrix[row][column]
-                            #intilizing values
-                            row_pos_goal=0
-                            column_pos_goal=0
-                            #go through the goal state matrix
-                            for row in range(2):
-                                for column in range(10): 
-                                    #now we find where that tile is we stored in the goal state
-                                    if end_matrix[row][column]==num:
-                                        #now we can set our check to true after we find the tile in goal state
-                                        check=True
-                                        # we get the new locations of the goal state of that tile for row and column
-                                        row_pos_goal= row
-                                        column_pos_goal = column
-                                        break
-                                    #lets break out of the loop so we dont account for mutliple checks after we find the tile
-                                    if check:
-                                        break
-                                #Now simple we take the difference of the locations in the intial matrix and the goal matrix
-                            total_distance+=abs(row_pos-row_pos_goal) + abs(column_pos-column_pos_goal)
+                            if row == 0:
+                                total_distance+=1
+                                value = self.current_matrix[row][column]
+                                total_distance+=abs((column+1)-value)
+                            else:
+                                #lets put a check
+                                check=False
+                                #get the row position of that misplaced tile
+                                row_pos= row
+                                #get the column position of that misplaced tile
+                                column_pos = column
+                                #we want to store that value of where it currently is in our matrix
+                                num = self.current_matrix[row][column]
+                                #intilizing values
+                                row_pos_goal=0
+                                column_pos_goal=0
+                                #go through the goal state matrix
+                                for row in range(2):
+                                    for column in range(10): 
+                                        #now we find where that tile is we stored in the goal state
+                                        if end_matrix[row][column]==num:
+                                            #now we can set our check to true after we find the tile in goal state
+                                            check=True
+                                            # we get the new locations of the goal state of that tile for row and column
+                                            row_pos_goal= row
+                                            column_pos_goal = column
+                                            break
+                                        #lets break out of the loop so we dont account for mutliple checks after we find the tile
+                                        if check:
+                                            break
+                            #Now simple we take the difference of the locations in the intial matrix and the goal matrix
+                                total_distance+=abs(row_pos-row_pos_goal) + abs(column_pos-column_pos_goal)
         return total_distance
     
     def children_helper(self, current_matrix, duplicates, row, column, children):
@@ -180,13 +185,13 @@ def general_search(problem, target):
         #lets add the total_nodes that we are expanding and lets get the max size of the quene
         total_nodes=total_nodes+1
         max_size= max(len(nodes),max_size)
-        curNode = nodes.pop(0) #remove the first element
+        curNode = heapq.heappop(nodes) #remove the first element
         count = count+1 # increase count
         #add the matrix into the repeat dictionary
         repeat[hash(tuple(map(tuple, curNode.current_matrix)))] = 1
         #print all the matrix's except for the intiial one
-        if(count>1):     
-            print(curNode)
+        # if(count>1):     
+        #     print(curNode)
 
         if(curNode.current_matrix == target): #this is how we are checking if its a goal state
             #Lets print out all the of the following when we find the goal state
@@ -201,6 +206,7 @@ def general_search(problem, target):
             if(not (hash(tuple(map(tuple, child.current_matrix))) in repeat)):
                 #if its uniform cost
                 child.heristic = child.cost + child.calculate_manhatten(target)
+                #print(child.heristic, child.current_matrix)
                 heapq.heappush(nodes, child) #appending children based on the herusitc values, priority quene
                 #adding these to repeate so we dont repeate in any of the children
                 repeat[hash(tuple(map(tuple, child.current_matrix)))] = 1
