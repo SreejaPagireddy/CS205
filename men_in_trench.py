@@ -1,10 +1,13 @@
 import copy
 import heapq
+five_men_start = [[-1, -1, 0, -1, 0, -1, -1],
+                  [0, 5, 4, 3, 2, 1, 0]]
+five_men_end = [[-1, -1, 0, -1, 0, -1, -1],
+                  [1, 2, 3, 4, 5, 0, 0]]
 end_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
              [ 1,2,3,4,5,6,7,8,9,0]]
 start_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
                 [0,2,3,4,5,6,7,8,9,1]]
-uniform_cost = 1
 class Node:    
     def __init__(self,state):
         #this is the state of the node, the matrix
@@ -30,7 +33,7 @@ class Node:
     def calculate_manhatten(self, end_matrix):
         total_distance = 0
         for row in range(2):
-            for column in range(10):
+            for column in range(len(self.current_matrix[0])):
                 if self.current_matrix[row][column] != 0:
                     if self.current_matrix[row][column] != -1:
                         if self.current_matrix[row][column] != end_matrix[row][column]:
@@ -52,7 +55,7 @@ class Node:
                                 column_pos_goal=0
                                 #go through the goal state matrix
                                 for row in range(2):
-                                    for column in range(10): 
+                                    for column in range(len(self.current_matrix[0])): 
                                         #now we find where that tile is we stored in the goal state
                                         if end_matrix[row][column]==num:
                                             #now we can set our check to true after we find the tile in goal state
@@ -98,7 +101,7 @@ class Node:
                 duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
                 self.children_helper(temp_matrix, duplicates, row, column-1, children)
                 move_found = True
-        if column<9 and current_matrix[row][column+1] == 0:
+        if column<len(self.current_matrix[0])-1 and current_matrix[row][column+1] == 0:
             #right
             temp_matrix = copy.deepcopy(current_matrix)
             temp_matrix[row][column], temp_matrix[row][column +1] = current_matrix[row][column+1], current_matrix[row][column]
@@ -117,37 +120,12 @@ class Node:
         children = []
         #check = False
         for row in range(2):
-            for column in range(10):
+            for column in range(len(self.current_matrix[0])):
                 #print(temp_matrix)
                 if self.current_matrix[row][column] != 0 and self.current_matrix[row][column]!=-1:
                     duplicates = {}
                     duplicates[hash(tuple(map(tuple, self.current_matrix)))] = 1
                     self.children_helper(self.current_matrix, duplicates, row, column, children)
-                        #check = True
-                        # if row<1 and self.current_matrix[row+1][column] == 0:
-                        #     #down
-                        #     temp_matrix = copy.deepcopy(self.current_matrix)
-                        #     temp_matrix[row][column], temp_matrix[row+1][column] = self.current_matrix[row+1][column], self.current_matrix[row][column]
-                        #     children.append(temp_matrix)
-                        # if row>0 and self.current_matrix[row-1][column] == 0:
-                        #     #up
-                        #     temp_matrix = copy.deepcopy(self.current_matrix)
-                        #     temp_matrix[row][column], temp_matrix[row-1][column] = self.current_matrix[row-1][column], self.current_matrix[row][column]
-                        #     children.append(temp_matrix)
-                        # if column>0 and self.current_matrix[row][column-1] == 0:
-                        #     #left
-                        #     temp_matrix = copy.deepcopy(self.current_matrix)
-                        #     temp_matrix[row][column], temp_matrix[row][column -1] = self.current_matrix[row][column-1], self.current_matrix[row][column]
-                        #     children.append(temp_matrix)
-                        # if column<9 and self.current_matrix[row][column+1] == 0:
-                        #     #right
-                        #     temp_matrix = copy.deepcopy(self.current_matrix)
-                        #     temp_matrix[row][column], temp_matrix[row][column +1] = self.current_matrix[row][column+1], self.current_matrix[row][column]
-                        #     children.append(temp_matrix)
-                #     if check:
-                #         break
-                # if check:
-                #     break
         #Now we want to convert all the matrixes to node because we want to store the nodes, copied from 8 puzzle
         for row in range(len(children)): # now we want to traverse through all the children we appended
             create_node = Node(children[row]) # we want to convert it to a Node becasue we are creating these matrix as a node
@@ -215,5 +193,5 @@ def general_search(problem, target):
     return "Failure"  
 def main():
     #print(calculate_manhatten(start_matrix, end_matrix))
-    general_search(start_matrix, end_matrix)
+    general_search(five_men_start, five_men_end)
 main()
