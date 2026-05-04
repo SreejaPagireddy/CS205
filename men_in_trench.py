@@ -8,6 +8,9 @@ end_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
              [ 1,2,3,4,5,6,7,8,9,0]]
 start_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
                 [0,2,3,4,5,6,7,8,9,1]]
+print("This is the start matrix", start_matrix)
+print("This is the end matrix", end_matrix)
+print("All the -1 are invalide for just place holders, Program running...")
 class Node:    
     def __init__(self,state):
         #this is the state of the node, the matrix
@@ -28,7 +31,6 @@ class Node:
         return self.heristic < other.heristic
     
 
-    #copied from my eight puzzle
     #for the children you can move it left, right, up, down. Only if 0 is there
     def calculate_manhatten(self, end_matrix):
         total_distance = 0
@@ -163,7 +165,7 @@ def general_search(problem, target):
         #lets add the total_nodes that we are expanding and lets get the max size of the quene
         total_nodes=total_nodes+1
         max_size= max(len(nodes),max_size)
-        curNode = heapq.heappop(nodes) #remove the first element
+        curNode = heapq.heappop(nodes) #remove the first element, using heapq so it maintains the min heap instead of just pop
         count = count+1 # increase count
         #add the matrix into the repeat dictionary
         repeat[hash(tuple(map(tuple, curNode.current_matrix)))] = 1
@@ -188,10 +190,11 @@ def general_search(problem, target):
                 heapq.heappush(nodes, child) #appending children based on the herusitc values, priority quene
                 #adding these to repeate so we dont repeate in any of the children
                 repeat[hash(tuple(map(tuple, child.current_matrix)))] = 1
+                
 
     #we are going to return failure if the quene was empty
     return "Failure"  
 def main():
     #print(calculate_manhatten(start_matrix, end_matrix))
-    general_search(five_men_start, five_men_end)
+    general_search(start_matrix, end_matrix)
 main()
