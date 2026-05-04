@@ -75,43 +75,61 @@ class Node:
     
     def children_helper(self, current_matrix, duplicates, row, column, children):
         #recursively
+        #base case condition
         move_found = False
+        #here we are checking the first row and to see if row'th 1 has a 0
         if row<1 and current_matrix[row+1][column] == 0:
             #down
+            #copy the matrix
             temp_matrix = copy.deepcopy(current_matrix)
+            #move the number down
             temp_matrix[row][column], temp_matrix[row+1][column] = current_matrix[row+1][column], current_matrix[row][column]
+            #make sure its not a duplicate
             if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                #add to children
                 children.append(temp_matrix)
+                #set the repeat
                 duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                #keep doing this recursively until it has no positions to move, can move more than one position if empty
                 self.children_helper(temp_matrix, duplicates, row+1, column, children)
                 move_found = True
         if row>0 and current_matrix[row-1][column] == 0:
             #up
             temp_matrix = copy.deepcopy(current_matrix)
+            #move the number up
             temp_matrix[row][column], temp_matrix[row-1][column] = current_matrix[row-1][column], current_matrix[row][column]
             if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                #add to children
                 children.append(temp_matrix)
                 duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                #keep doing this recursively until it has no positions to move, can move more than one position if empty
                 self.children_helper(temp_matrix, duplicates, row-1, column, children)
                 move_found = True
         if column>0 and current_matrix[row][column-1] == 0:
             #left
             temp_matrix = copy.deepcopy(current_matrix)
+            #move the number left
             temp_matrix[row][column], temp_matrix[row][column -1] = current_matrix[row][column-1], current_matrix[row][column]
             if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                #add to children
                 children.append(temp_matrix)
                 duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                #keep doing this recursively until it has no positions to move, can move more than one position if empty
                 self.children_helper(temp_matrix, duplicates, row, column-1, children)
                 move_found = True
         if column<len(self.current_matrix[0])-1 and current_matrix[row][column+1] == 0:
             #right
             temp_matrix = copy.deepcopy(current_matrix)
+            #move the number right
             temp_matrix[row][column], temp_matrix[row][column +1] = current_matrix[row][column+1], current_matrix[row][column]
             if hash(tuple(map(tuple, temp_matrix))) not in duplicates:
+                #add to children
                 children.append(temp_matrix)
                 duplicates[hash(tuple(map(tuple, temp_matrix)))] = 1
+                #keep doing this recursively until it has no positions to move, can move more than one position if empty
                 self.children_helper(temp_matrix, duplicates, row, column+1, children)
                 move_found = True
+        #if move found still false then just return, base case for recursion
         if not move_found:
             return
 
@@ -170,8 +188,8 @@ def general_search(problem, target):
         #add the matrix into the repeat dictionary
         repeat[hash(tuple(map(tuple, curNode.current_matrix)))] = 1
         #print all the matrix's except for the intiial one
-        # if(count>1):     
-        #     print(curNode)
+        if(count>1):     
+            print(curNode)
 
         if(curNode.current_matrix == target): #this is how we are checking if its a goal state
             #Lets print out all the of the following when we find the goal state
