@@ -24,7 +24,8 @@ class Node:
     
     def __repr__(self):
         # This method was used for debugging to see the herusitic value
-        return str(self.heristic) +":" + str(self.current_matrix)
+        #return str(self.heristic) +":" + str(self.current_matrix)
+        return "g(n)= " + str(self.cost )+ " h(n)= " + str(self.heristic-self.cost) +  " " + str(self.current_matrix)
     
     def __lt__(self, other):
         # This method compares the herustic values of 2 objects
