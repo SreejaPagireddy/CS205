@@ -167,7 +167,6 @@ def queue_make_node(initial_state):
     new_node = Node(initial_state)
     #using a heapq so we can order it based on the priority values or in other words the herustic + cost
     heapq.heappush(queue, new_node) 
-    #queue.append(new_node)
     return queue
 #copied from 8-puzzle
 def general_search(problem, target):
