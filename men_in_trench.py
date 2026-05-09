@@ -153,8 +153,6 @@ class Node:
             create_node.cost = self.cost + 1  # we add the cost, or depth to these children
             create_node.parent = self #we assign the intial node as the parent to these children
             children[row] = create_node #putting it back into return_children array as nodes
-        # for child in children:
-        #     print("Children. ", child)
 
         return children
 
@@ -214,6 +212,5 @@ def general_search(problem, target):
     #we are going to return failure if the quene was empty
     return "Failure"  
 def main():
-    #print(calculate_manhatten(start_matrix, end_matrix))
     general_search(start_matrix, end_matrix)
 main()
