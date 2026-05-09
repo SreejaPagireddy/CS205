@@ -1,5 +1,6 @@
 import copy
 import heapq
+#starting hardcoded states for puzzles
 five_men_start = [[-1, -1, 0, -1, 0, -1, -1],
                   [0, 5, 4, 3, 2, 1, 0]]
 five_men_end = [[-1, -1, 0, -1, 0, -1, -1],
