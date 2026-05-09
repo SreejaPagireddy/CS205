@@ -24,15 +24,13 @@ class Node:
     
     def __repr__(self):
         # This method was used for debugging to see the herusitic value
-        #return str(self.heristic) +":" + str(self.current_matrix)
         return "g(n)= " + str(self.cost )+ " h(n)= " + str(self.heristic-self.cost) +  " " + str(self.current_matrix)
     
     def __lt__(self, other):
         # This method compares the herustic values of 2 objects
         return self.heristic < other.heristic
     
-
-    #for the children you can move it left, right, up, down. Only if 0 is there
+    #calculating the manhatten distance
     def calculate_manhatten(self, end_matrix):
         total_distance = 0
         for row in range(2):
@@ -41,6 +39,7 @@ class Node:
                     if self.current_matrix[row][column] != -1:
                         if self.current_matrix[row][column] != end_matrix[row][column]:
                             if row == 0:
+                                #if its in the first row, then we want to bring the person down and just count the difference
                                 total_distance+=1
                                 value = self.current_matrix[row][column]
                                 total_distance+=abs((column+1)-value)
@@ -135,14 +134,9 @@ class Node:
             return
 
     def children(self):
-        #We want to get the possible moves, #We have to account the uniform plus the heruistic and then go take that path to goal state,
-        #make a copy of the matrix
-        #print("Current. ", self.current_matrix)
         children = []
-        #check = False
         for row in range(2):
             for column in range(len(self.current_matrix[0])):
-                #print(temp_matrix)
                 if self.current_matrix[row][column] != 0 and self.current_matrix[row][column]!=-1:
                     duplicates = {}
                     duplicates[hash(tuple(map(tuple, self.current_matrix)))] = 1
@@ -166,7 +160,7 @@ def queue_make_node(initial_state):
     heapq.heappush(queue, new_node) 
     #queue.append(new_node)
     return queue
-
+#copied from 8-puzzle
 def general_search(problem, target):
     # lets make a dictionary to keep track of the repeating states
     repeat = dict()
