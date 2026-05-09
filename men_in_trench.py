@@ -1,14 +1,17 @@
 import copy
 import heapq
 #starting hardcoded states for puzzles
+#five men in a trench puzzle
 five_men_start = [[-1, -1, 0, -1, 0, -1, -1],
                   [0, 5, 4, 3, 2, 1, 0]]
 five_men_end = [[-1, -1, 0, -1, 0, -1, -1],
                   [1, 2, 3, 4, 5, 0, 0]]
+#nine men in a trench puzzle
 end_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
              [ 1,2,3,4,5,6,7,8,9,0]]
 start_matrix = [[-1,-1,-1,0,-1,0,-1,0,-1,-1],
                 [0,2,3,4,5,6,7,8,9,1]]
+#printing out initial start and end matrix for users
 print("This is the start matrix", start_matrix)
 print("This is the end matrix", end_matrix)
 print("All the -1 are invalide for just place holders, Program running...")
@@ -34,8 +37,10 @@ class Node:
     #calculating the manhatten distance
     def calculate_manhatten(self, end_matrix):
         total_distance = 0
+        #going through row and column for puzzle
         for row in range(2):
             for column in range(len(self.current_matrix[0])):
+                # We want to calculate distances for real numbers not 0 and -1 and not if it aldredy reached the end matrix
                 if self.current_matrix[row][column] != 0:
                     if self.current_matrix[row][column] != -1:
                         if self.current_matrix[row][column] != end_matrix[row][column]:
@@ -136,11 +141,14 @@ class Node:
 
     def children(self):
         children = []
+        #going through row and column for puzzle
         for row in range(2):
             for column in range(len(self.current_matrix[0])):
+                # here we are adding the state that will generate the children into duplicates
                 if self.current_matrix[row][column] != 0 and self.current_matrix[row][column]!=-1:
                     duplicates = {}
                     duplicates[hash(tuple(map(tuple, self.current_matrix)))] = 1
+                    #calling the helper function which will generate children
                     self.children_helper(self.current_matrix, duplicates, row, column, children)
         #Now we want to convert all the matrixes to node because we want to store the nodes, copied from 8 puzzle
         for row in range(len(children)): # now we want to traverse through all the children we appended
@@ -196,9 +204,8 @@ def general_search(problem, target):
             #lets set that inital matrix we expanding to the parent
             #make sure that the children are not a repeat, we dont wanna push repeates
             if(not (hash(tuple(map(tuple, child.current_matrix))) in repeat)):
-                #if its uniform cost
+                #adding the uniform cost and manhatten distance to each child
                 child.heristic = child.cost + child.calculate_manhatten(target)
-                #print(child.heristic, child.current_matrix)
                 heapq.heappush(nodes, child) #appending children based on the herusitc values, priority quene
                 #adding these to repeate so we dont repeate in any of the children
                 repeat[hash(tuple(map(tuple, child.current_matrix)))] = 1
